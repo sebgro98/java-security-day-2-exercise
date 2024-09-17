@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController
@@ -67,12 +68,12 @@ public class BorrowingController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
         } catch (Exception e) {
-            throw new BadRequestException("bad request + hello");
+            throw new BadRequestException("bad request");
         }
     }
 
     @PostMapping("boardGames/{boardGameId}")
-    public ResponseEntity<?> createBoardGame(@RequestBody Borrowing borrowing, @PathVariable int userid, @PathVariable int boardGameId ) {
+    public ResponseEntity<?> createBoardGame(@PathVariable int userid, @PathVariable int boardGameId ) {
         User user = this.userRepository.findById(userid).orElseThrow(
                 () -> new NotFoundException("No user with that id: " + userid + " found")
         );
@@ -80,6 +81,7 @@ public class BorrowingController {
                 () -> new NotFoundException("No video game with that id: " + boardGameId + " found")
         );
         try {
+            Borrowing borrowing = new Borrowing();
             borrowing.setUser(user);
             borrowing.setBoardGame(boardGame);
             borrowingRepository.save(borrowing);
@@ -93,7 +95,7 @@ public class BorrowingController {
     }
 
     @PostMapping("dvds/{dvdId}")
-    public ResponseEntity<?> createDVD(@RequestBody Borrowing borrowing, @PathVariable int userid, @PathVariable int dvdId ) {
+    public ResponseEntity<?> createDVD(@PathVariable int userid, @PathVariable int dvdId ) {
         User user = this.userRepository.findById(userid).orElseThrow(
                 () -> new NotFoundException("No user with that id: " + userid + " found")
         );
@@ -101,6 +103,7 @@ public class BorrowingController {
                 () -> new NotFoundException("No video game with that id: " + dvdId + " found")
         );
         try {
+            Borrowing borrowing = new Borrowing();
             borrowing.setUser(user);
             borrowing.setDvd(dvd);
             borrowingRepository.save(borrowing);
@@ -114,7 +117,7 @@ public class BorrowingController {
     }
 
     @PostMapping("cds/{cdId}")
-    public ResponseEntity<?> createCD(@RequestBody Borrowing borrowing, @PathVariable int userid, @PathVariable int cdId ) {
+    public ResponseEntity<?> createCD( @PathVariable int userid, @PathVariable int cdId ) {
         User user = this.userRepository.findById(userid).orElseThrow(
                 () -> new NotFoundException("No user with that id: " + userid + " found")
         );
@@ -122,6 +125,7 @@ public class BorrowingController {
                 () -> new NotFoundException("No video game with that id: " + cdId + " found")
         );
         try {
+            Borrowing borrowing = new Borrowing();
             borrowing.setUser(user);
             borrowing.setCd(cd);
             borrowingRepository.save(borrowing);
@@ -135,7 +139,7 @@ public class BorrowingController {
     }
 
     @PostMapping("books/{bookId}")
-    public ResponseEntity<?> createBook(@RequestBody Borrowing borrowing, @PathVariable int userid, @PathVariable int bookId) {
+    public ResponseEntity<?> createBook( @PathVariable int userid, @PathVariable int bookId) {
         User user = this.userRepository.findById(userid).orElseThrow(
                 () -> new NotFoundException("No user with that id: " + userid + " found")
         );
@@ -143,6 +147,7 @@ public class BorrowingController {
                 () -> new NotFoundException("No video game with that id: " + bookId + " found")
         );
         try {
+            Borrowing borrowing = new Borrowing();
             borrowing.setUser(user);
             borrowing.setBook(book);
             borrowingRepository.save(borrowing);
@@ -153,6 +158,33 @@ public class BorrowingController {
         } catch (Exception e) {
             throw new BadRequestException("bad request");
         }
+
+    }
+    @PutMapping("{borrowingsId}/videoGames/{videoGameId}")
+    public ResponseEntity<?> updateVideoGame(@PathVariable int borrowingsId, @PathVariable int videoGameId, @PathVariable int userid) {
+        User user = this.userRepository.findById(userid).orElseThrow(
+                () -> new NotFoundException("No user with that id: " + userid + " found")
+        );
+        VideoGame videoGame = this.videoGameRepository.findById(videoGameId).orElseThrow(
+                () -> new NotFoundException("No video game with that id: " + videoGameId + " found")
+        );
+
+        Borrowing borrowing = this.borrowingRepository.findById(borrowingsId).orElseThrow(
+                () -> new NotFoundException("No video game with that id: " + borrowingsId + " found")
+        );
+
+        try {
+            borrowing.setUser(user);
+            borrowing.setVideoGame(videoGame);
+            borrowing.setReturnedAt(OffsetDateTime.now());
+            borrowing = this.borrowingRepository.save(borrowing);
+
+        } catch (Exception e) {
+            throw new BadRequestException("bad request");
+        }
+        Response<Borrowing> response = new Response<>();
+        response.set(borrowing);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 }

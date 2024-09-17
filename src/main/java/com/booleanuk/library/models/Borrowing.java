@@ -1,11 +1,15 @@
 package com.booleanuk.library.models;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @NoArgsConstructor
 @Entity
@@ -16,6 +20,7 @@ public class Borrowing {
     private int id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     User user;
 
@@ -64,10 +69,5 @@ public class Borrowing {
     @PrePersist
     public void prePersist() {
         borrowedAt = OffsetDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        returnedAt = OffsetDateTime.now();
     }
 }

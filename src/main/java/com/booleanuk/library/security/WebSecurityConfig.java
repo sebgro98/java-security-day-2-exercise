@@ -62,9 +62,13 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**", "/books/**", "/videoGames/**", "/cds/**", "/dvds/**", "/bordGames/**")
                         .hasAnyRole("USER", "MODERATOR")
+                        .requestMatchers(HttpMethod.POST, "/users/{userId}/borrowings/**")
+                        .hasAnyRole("USER", "MODERATOR")
                         .requestMatchers(HttpMethod.POST, "/users/**", "/books/**", "/videoGames/**", "/cds/**", "/dvds/**", "/bordGames/**")
                         .hasRole("MODERATOR")
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/books/**", "/videoGames/**", "/cds/**", "/dvds/**", "/bordGames/**")
+                        .hasRole("MODERATOR")
+                        .requestMatchers(HttpMethod.PUT,"/users/**", "/books/**", "/videoGames/**", "/cds/**", "/dvds/**", "/bordGames/**")
                         .hasRole("MODERATOR")
                         .anyRequest().authenticated()
                 );
